@@ -39,4 +39,5 @@
             style="?android:attr/borderlessButtonStyle"
             android:src="@drawable/practice_button"
             android:onClick="startPractice"/>
+
 </RelativeLayout>
