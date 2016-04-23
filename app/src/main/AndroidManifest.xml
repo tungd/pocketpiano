@@ -17,15 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashActivity" android:theme="@style/SplashTheme">
-            <itent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </itent-filter>
+            </intent-filter>
         </activity>
         <activity android:name=".HomeActivity">
-            <intent-filter>
-                <action android:name=".HomeActivity" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".FreeStyleActivity"
