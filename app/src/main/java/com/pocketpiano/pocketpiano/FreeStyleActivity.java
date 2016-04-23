@@ -18,6 +18,8 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.Arrays;
+
 
 public class FreeStyleActivity extends Activity implements CvCameraViewListener2 {
 
@@ -90,7 +92,12 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
     final double RATIO = 2.2 / 3;
     final Scalar WHITE = new Scalar(255, 255, 255);
+    final Scalar RED = new Scalar(255, 0, 0);
     Mat diff;
+
+    double[] pixels;
+    final int RANGE = 14;
+    final int[] scores = new int[RANGE];
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
@@ -103,17 +110,57 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
             Core.absdiff(previousFrame, currentFrame, diff);
 
-            currentFrame.copyTo(previousFrame);
+            inputFrame.gray().copyTo(previousFrame);
         }
 
         Core.flip(diff, diff, 0);
 
-        Imgproc.line(diff,
-                new Point(0, diff.height() * RATIO),
-                new Point(diff.width(), diff.height() * RATIO),
-                WHITE, 3);
+//        Imgproc.line(diff,
+//                new Point(0, diff.height() * RATIO),
+//                new Point(diff.width(), diff.height() * RATIO),
+//                WHITE, 3);
 
-        return diff;
+        int points;
+        long height = Math.round(diff.rows() * RATIO);
+        long row = Math.round(height);
+        int range = Math.round(diff.width() / RANGE);
+
+        Mat out = inputFrame.rgba();
+        Core.flip(out, out, 0);
+
+        // Iterate along the line
+        for (int i = 0; i < scores.length; i += 1) {
+            // Gather all the pixels
+            scores[i] = 0;
+
+            for (int j = range * i; j < range * i + range; j += 1) {
+                pixels = diff.get((int) height, j);
+
+//                Log.i("PIXELS", Arrays.toString(pixels));
+//                if (pixels[0] > 200 && pixels[1] > 200 && pixels[2] > 200) {
+//                    points += 1;
+//                }
+                if (pixels[0] > 8) {
+                    scores[i] += 1;
+                }
+            }
+
+            if (scores[i] >= range * 0.5) {
+                Imgproc.line(out,
+                        new Point(i * range, height),
+                        new Point(i * range + range, height),
+                        RED, 3);
+            }
+
+            Imgproc.line(out,
+                    new Point(i * range + range, 0),
+                    new Point(i * range + range, diff.rows()),
+                    WHITE, 3);
+        }
+
+        Log.i("SCORES", Arrays.toString(scores));
+
+        return out;
     }
 
     @Override
