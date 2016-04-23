@@ -1,6 +1,5 @@
 package com.pocketpiano.pocketpiano;
 
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -33,8 +32,6 @@ public class HomeActivity extends AppCompatActivity implements CvCameraViewListe
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
-
-                    
 
                     mOpenCvCameraView.enableView();
                 }
