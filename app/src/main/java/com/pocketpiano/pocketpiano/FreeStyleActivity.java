@@ -90,8 +90,6 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
     final double RATIO = 2.2 / 3;
     final Scalar WHITE = new Scalar(255, 255, 255);
-    Mat processedPreviousFrame;
-    Mat processedCurrentFrame;
     Mat diff;
 
     @Override
@@ -108,7 +106,7 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
             currentFrame.copyTo(previousFrame);
         }
 
-
+        Core.flip(diff, diff, 0);
 
         Imgproc.line(diff,
                 new Point(0, diff.height() * RATIO),
