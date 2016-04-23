@@ -1,10 +1,14 @@
 package com.pocketpiano.pocketpiano;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.pocketpiano.pocketpiano.instruments.PianoNodes;
+import com.pocketpiano.pocketpiano.instruments.PianoNodes.Note;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -34,6 +38,8 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
     private CameraBridgeViewBase mOpenCvCameraView;
 
+    PianoNodes piano;
+
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -62,6 +68,8 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_surface_view);
         mOpenCvCameraView.setCvCameraViewListener(this);
+
+        piano = new PianoNodes(this);
     }
 
     @Override
@@ -98,6 +106,10 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
     double[] pixels;
     final int RANGE = 14;
     final int[] scores = new int[RANGE];
+    final Note[] notes = new Note[] {
+            Note.C3, Note.D3, Note.E3, Note.F3, Note.G3, Note.A3, Note.B3,
+            Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4
+    };
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
@@ -121,12 +133,17 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 //                WHITE, 3);
 
         int points;
-        long height = Math.round(diff.rows() * RATIO);
+        long height = Math.round(diff.height() * RATIO);
         long row = Math.round(height);
         int range = Math.round(diff.width() / RANGE);
 
         Mat out = inputFrame.rgba();
         Core.flip(out, out, 0);
+
+        Imgproc.line(out,
+                new Point(0, height),
+                new Point(diff.cols(), height),
+                new Scalar(190, 190, 190), 3);
 
         // Iterate along the line
         for (int i = 0; i < scores.length; i += 1) {
@@ -145,11 +162,13 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
                 }
             }
 
-            if (scores[i] >= range * 0.5) {
+            if (scores[i] >= range * 0.3) {
                 Imgproc.line(out,
                         new Point(i * range, height),
                         new Point(i * range + range, height),
                         RED, 3);
+
+                new ScheduledNote().execute(notes[i]);
             }
 
             Imgproc.line(out,
@@ -188,6 +207,16 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
         super.onDestroy();
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
+        }
+    }
+
+    class ScheduledNote extends AsyncTask<Note, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Note... notes) {
+            piano.play(notes[0]);
+            piano.startMedia(notes[0]);
+            return null;
         }
     }
 }

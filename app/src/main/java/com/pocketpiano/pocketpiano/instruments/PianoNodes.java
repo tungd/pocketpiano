@@ -18,7 +18,7 @@ public class PianoNodes {
     public PianoNodes(Context context){
         this.context = context;
     }
-    enum Note {
+    public enum Note {
         A5_, A5, A3_, A3, A4, A4_,
         B5, B3, B4,
         C5_, C5, C3_, C3, C4, C4_,
