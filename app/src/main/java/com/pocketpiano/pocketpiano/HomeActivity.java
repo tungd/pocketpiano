@@ -18,7 +18,7 @@ public class HomeActivity extends Activity {
         Intent myIntent = new Intent(this, FreeStyleActivity.class);
         startActivity(myIntent);
     }
-    
+
     public void startPractice(View view) {
         Intent myIntent = new Intent(this, FreeStyleActivity.class);
         startActivity(myIntent);
