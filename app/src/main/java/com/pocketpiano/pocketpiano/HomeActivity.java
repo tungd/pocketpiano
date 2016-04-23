@@ -7,6 +7,7 @@ import android.view.View;
 
 public class HomeActivity extends Activity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,7 +18,7 @@ public class HomeActivity extends Activity {
         Intent myIntent = new Intent(this, FreeStyleActivity.class);
         startActivity(myIntent);
     }
-
+    
     public void startPractice(View view) {
         Intent myIntent = new Intent(this, FreeStyleActivity.class);
         startActivity(myIntent);

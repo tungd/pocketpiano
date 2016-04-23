@@ -19,10 +19,19 @@ android {
     }
 }
 
+repositories {
+    maven { url 'https://github.com/kshoji/JFugue-for-Android/raw/master/jfugue-android/snapshot' }
+    maven { url 'https://github.com/kshoji/USB-MIDI-Driver/raw/master/MIDIDriver/snapshots' }
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:support-v4:23.3.0'
+
+    compile 'jp.kshoji:jfugue-android:4.0.3:@aar'
+    compile 'jp.kshoji:midi-driver:0.1.1:@aar'
+
     compile project(':OpenCVLibrary310')
 }
