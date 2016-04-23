@@ -3,11 +3,7 @@ package com.pocketpiano.pocketpiano;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -23,14 +19,10 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 
-public class FreeStyleActivity extends Activity implements View.OnTouchListener, CvCameraViewListener2 {
+public class FreeStyleActivity extends Activity implements CvCameraViewListener2 {
 
     static {
         System.loadLibrary("opencv_java3");
-
-        if (!OpenCVLoader.initDebug()) {
-            Log.i("ERROR", "");
-        }
     }
 
     private static final String TAG = "OCVSample::Activity";
@@ -39,8 +31,6 @@ public class FreeStyleActivity extends Activity implements View.OnTouchListener,
     private Mat currentFrame;
 
     private CameraBridgeViewBase mOpenCvCameraView;
-    private SeekBar minThresholdSeekbar = null;
-    private TextView minThresholdSeekbarText = null;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -50,7 +40,6 @@ public class FreeStyleActivity extends Activity implements View.OnTouchListener,
                     Log.i(TAG, "OpenCV loaded successfully");
 
                     mOpenCvCameraView.enableView();
-                    mOpenCvCameraView.setOnTouchListener(FreeStyleActivity.this);
                 }
                 break;
                 default: {
@@ -63,39 +52,14 @@ public class FreeStyleActivity extends Activity implements View.OnTouchListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_freestyle);
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.main_surface_view);
         mOpenCvCameraView.setCvCameraViewListener(this);
-
-        minThresholdSeekbarText = (TextView) findViewById(R.id.textView3);
-
-        minThresholdSeekbar = (SeekBar) findViewById(R.id.seekBar1);
-        minThresholdSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int progessChanged = 0;
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                progessChanged = progress;
-                minThresholdSeekbarText.setText(String.valueOf(progessChanged));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                minThresholdSeekbarText.setText(String.valueOf(progessChanged));
-            }
-        });
-
-        minThresholdSeekbar.setProgress(8700);
     }
 
     @Override
@@ -107,7 +71,9 @@ public class FreeStyleActivity extends Activity implements View.OnTouchListener,
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        String caption = "Resolution " + Integer.valueOf(mOpenCvCameraView.getWidth()).toString() + "x" + Integer.valueOf(mOpenCvCameraView.getHeight()).toString();
+        String caption = String.format("Resolution %sx%s",
+                mOpenCvCameraView.getWidth(),
+                mOpenCvCameraView.getHeight());
         Toast.makeText(this, caption, Toast.LENGTH_SHORT).show();
 
         currentFrame = new Mat(width, height, CvType.CV_8UC4);
@@ -178,10 +144,5 @@ public class FreeStyleActivity extends Activity implements View.OnTouchListener,
         if (mOpenCvCameraView != null) {
             mOpenCvCameraView.disableView();
         }
-    }
-
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        return false;
     }
 }
