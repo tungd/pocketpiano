@@ -8,3 +8,5 @@
 /captures
 .idea
 OpenCVLibrary310/build
+app/src/main/gen/
+app/src/main/jniLibs/
