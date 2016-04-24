@@ -108,8 +108,8 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
     final int[] scores = new int[RANGE];
 
     final Note[] notes = new Note[] {
-            Note.C3, Note.D3, Note.E3, Note.F3, Note.G3, Note.A3, Note.B3,
-            Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4
+            Note.C, Note.D, Note.E, Note.F, Note.G, Note.A, Note.B,
+            Note.C1, Note.D1, Note.E1, Note.F1, Note.G1, Note.A1, Note.B1
     };
     final double THRESHOLD = 0.4;
 
