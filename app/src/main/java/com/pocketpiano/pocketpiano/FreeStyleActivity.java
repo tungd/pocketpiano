@@ -19,10 +19,12 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 public class FreeStyleActivity extends Activity implements CvCameraViewListener2 {
@@ -111,6 +113,30 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
             Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4
     };
 
+    protected Mat drawListDroptitleNewFrame(List<Rect> dropRect, Mat img) {
+        long height = Math.round(diff.height() * RATIO);
+        for (Rect rect: dropRect) {
+            if(rect.height < 60) {
+                rect.height +=1;
+            } else {
+                rect.y+= 1;
+            }
+            if(rect.y < height)
+            Imgproc.rectangle(img,rect.br(),rect.tl(),WHITE,3,8,0);
+        }
+        return img;
+    }
+
+    protected void NoteToPosition(Note note, Mat img) {
+        Note[] noteList = notes;
+        int range = Math.round(diff.width() / RANGE);
+        List<Note> notes =  Arrays.asList(noteList);
+        int pos = notes.indexOf(note);
+        Point startPoint = new Point(pos * range,0);
+        Rect dropRect = new Rect(pos * range,0,1,range);
+
+    }
+
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         if (first) {
@@ -173,7 +199,7 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
             Imgproc.line(out,
                     new Point(i * range + range, 0),
-                    new Point(i * range + range, diff.rows()),
+                    new Point(i * range + range, diff.width()),
                     WHITE, 3);
         }
 
@@ -181,6 +207,7 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
         return out;
     }
+
 
     @Override
     protected void onPause() {
