@@ -22,13 +22,20 @@ public class PianoNodes {
         this.context = context;
     }
     public enum Note {
-        A5_, A5, A3_, A3, A4, A4_,
-        B5, B3, B4,
-        C5_, C5, C3_, C3, C4, C4_,
-        D5_, D5, D3_, D3, D4, D4_,
-        E5, E3, E4,
-        F5_, F5, F3_, F3, F4, F4_,
-        G5_, G5, G3_, G3, G4, G4_
+//        A5_, A5, A3_, A3, A4, A4_,
+//        B5, B3, B4,
+//        C5_, C5, C3_, C3, C4, C4_,
+//        D5_, D5, D3_, D3, D4, D4_,
+//        E5, E3, E4,
+//        F5_, F5, F3_, F3, F4, F4_,
+//        G5_, G5, G3_, G3, G4, G4_
+A1, A,
+        B1, B,
+        C1, C,
+        D, D1,
+        E1, E,
+        F1, F,
+        G1, G
     }
 
     public void play(Note note) {
