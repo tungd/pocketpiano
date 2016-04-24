@@ -121,20 +121,24 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
             } else {
                 rect.y+= 1;
             }
+
+            if (rect.y > height -60) {
+                rect.height -=1;
+            }
             if(rect.y < height)
             Imgproc.rectangle(img,rect.br(),rect.tl(),WHITE,3,8,0);
         }
         return img;
     }
 
-    protected void NoteToPosition(Note note, Mat img) {
+    protected Rect NoteToPosition(Note note, Mat img) {
         Note[] noteList = notes;
         int range = Math.round(diff.width() / RANGE);
         List<Note> notes =  Arrays.asList(noteList);
         int pos = notes.indexOf(note);
         Point startPoint = new Point(pos * range,0);
         Rect dropRect = new Rect(pos * range,0,1,range);
-
+        return dropRect;
     }
 
     @Override
