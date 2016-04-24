@@ -106,10 +106,12 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
     double[] pixels;
     final int RANGE = 14;
     final int[] scores = new int[RANGE];
+
     final Note[] notes = new Note[] {
             Note.C3, Note.D3, Note.E3, Note.F3, Note.G3, Note.A3, Note.B3,
             Note.C4, Note.D4, Note.E4, Note.F4, Note.G4, Note.A4, Note.B4
     };
+    final double THRESHOLD = 0.4;
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
@@ -127,14 +129,8 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
 
         Core.flip(diff, diff, 0);
 
-//        Imgproc.line(diff,
-//                new Point(0, diff.height() * RATIO),
-//                new Point(diff.width(), diff.height() * RATIO),
-//                WHITE, 3);
-
-        int points;
+        int score1;
         long height = Math.round(diff.height() * RATIO);
-        long row = Math.round(height);
         int range = Math.round(diff.width() / RANGE);
 
         Mat out = inputFrame.rgba();
@@ -148,26 +144,20 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
         // Iterate along the line
         for (int i = 0; i < scores.length; i += 1) {
             // Gather all the pixels
-            scores[i] = 0;
+            score1 = 0;
 
             for (int j = range * i; j < range * i + range; j += 1) {
                 pixels = diff.get((int) height, j);
-
-//                Log.i("PIXELS", Arrays.toString(pixels));
-//                if (pixels[0] > 200 && pixels[1] > 200 && pixels[2] > 200) {
-//                    points += 1;
-//                }
-                if (pixels[0] > 8) {
-                    scores[i] += 1;
+                if (pixels[0] > 12) {
+                    score1 += 1;
                 }
             }
 
-            if (scores[i] >= range * 0.3) {
+            if (score1 >= range * THRESHOLD) {
                 Imgproc.line(out,
                         new Point(i * range, height),
                         new Point(i * range + range, height),
                         RED, 3);
-
                 new ScheduledNote().execute(notes[i]);
             }
 
@@ -175,6 +165,8 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
                     new Point(i * range + range, 0),
                     new Point(i * range + range, diff.rows()),
                     WHITE, 3);
+
+            scores[i] = score1;
         }
 
         Log.i("SCORES", Arrays.toString(scores));
@@ -215,7 +207,6 @@ public class FreeStyleActivity extends Activity implements CvCameraViewListener2
         @Override
         protected Void doInBackground(Note... notes) {
             piano.play(notes[0]);
-            piano.startMedia(notes[0]);
             return null;
         }
     }

@@ -1,10 +1,12 @@
 package com.pocketpiano.pocketpiano.instruments;
 
 import android.content.Context;
-import android.media.JetPlayer;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import com.pocketpiano.pocketpiano.R;
+import android.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by quanghuy on 4/23/16.
@@ -12,7 +14,8 @@ import com.pocketpiano.pocketpiano.R;
 public class PianoNodes {
 
     Context context;
-    MediaPlayer mediaPlayer = new MediaPlayer();
+    MediaPlayer mediaPlayer;
+    Map<Note, MediaPlayer> players = new HashMap<>();
 
 
     public PianoNodes(Context context){
@@ -29,35 +32,26 @@ public class PianoNodes {
     }
 
     public void play(Note note) {
-        int id = context.getResources().getIdentifier(note.toString().toLowerCase(), "raw", context.getPackageName());
-        mediaPlayer.create(context, id);
-    }
-
-    public void startMedia(Note note){
-        try {
-            System.out.println("Note:" + note.toString());
-            mediaPlayer.setDataSource(context, Uri.parse("android.resource://com.pocketpiano.pocketpiano/" +
-                    context.getResources().getIdentifier(note.toString().toLowerCase(), "raw", context.getPackageName())));
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-            mediaPlayer.setOnCompletionListener(onCompletionListener);
+        if (!players.containsKey(note)) {
+            MediaPlayer player = new MediaPlayer();
+            try {
+                player.setDataSource(context, Uri.parse("android.resource://com.pocketpiano.pocketpiano/" +
+                        context.getResources().getIdentifier(note.toString().toLowerCase(), "raw", context.getPackageName())));
+                player.prepare();
+                players.put(note, player);
+            } catch (Exception e) {
+                Log.e("ERROR", e.toString());
+            }
         }
-        catch (Exception e) {
 
+        MediaPlayer player = players.get(note);
+        if (player != null && !player.isPlaying()) {
+            player.start();
         }
     }
 
     public void playRandomNode() {
         Note note = Note.values()[(int) (Math.random() * Note.values().length)];
         this.play(note);
-        this.startMedia(note);
     }
-
-    private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-    };
 }
