@@ -20,7 +20,7 @@ public class HomeActivity extends Activity {
     }
 
     public void startPractice(View view) {
-        PianoNodes piano = new PianoNodes(this);
-        piano.playRandomNode();
+        Intent intent = new Intent(this, PracticeActivity.class);
+        startActivity(intent);
     }
 }
